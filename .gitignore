@@ -1,2 +1,70 @@
-/server/node_modules
-/ml-service/.venv
+# ===============================
+# 🔐 ENV FILES
+# ===============================
+.env
+**/.env
+
+# ===============================
+# 📦 NODE MODULES
+# ===============================
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# ===============================
+# 🏗 BUILD FILES
+# ===============================
+dist/
+build/
+client/dist/
+client/build/
+
+# ===============================
+# 🧠 PYTHON
+# ===============================
+ml-service/.venv/
+ml-service/__pycache__/
+ml-service/*.pyc
+ml-service/*.pyo
+ml-service/*.pyd
+ml-service/.Python
+
+# ===============================
+# 🧪 TEST / COVERAGE
+# ===============================
+coverage/
+*.lcov
+
+# ===============================
+# 🖥 OS FILES
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# 🧾 LOGS
+# ===============================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===============================
+# 🧰 IDE
+# ===============================
+.vscode/
+.idea/
+
+# ===============================
+# 🚀 TEMP FILES
+# ===============================
+.tmp/
+.temp/
+.cache/
+
+# ===============================
+# 🔑 SECRET FILES
+# ===============================
+*.pem
+*.key

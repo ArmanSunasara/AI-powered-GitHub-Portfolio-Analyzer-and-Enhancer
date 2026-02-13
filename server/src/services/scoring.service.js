@@ -1,13 +1,24 @@
-export const calculateScore = (repos) => {
+export const calculateAdvancedScore = (repoAnalysis) => {
+
+  if (repoAnalysis.length === 0) return 0;
+
   let score = 0;
 
-  // Documentation score
-  const withReadme = repos.filter(r => r.description);
-  score += (withReadme.length / repos.length) * 20;
+  const readmeScore =
+    repoAnalysis.filter(r => r.hasReadme).length / repoAnalysis.length;
 
-  // Project completeness
-  const completeRepos = repos.filter(r => !r.fork);
-  score += (completeRepos.length / repos.length) * 20;
+  const commitScore =
+    repoAnalysis.filter(r => r.commitCount > 5).length /
+    repoAnalysis.length;
 
-  return Math.min(Math.round(score), 100);
+  const languageSet = new Set();
+  repoAnalysis.forEach(r => r.languages.forEach(l => languageSet.add(l)));
+
+  const languageScore = languageSet.size > 3 ? 1 : 0.5;
+
+  score += readmeScore * 30;
+  score += commitScore * 30;
+  score += languageScore * 20;
+
+  return Math.round(score);
 };

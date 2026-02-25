@@ -3,3 +3,5 @@
 /ml-service/.env
 /ml-service/.venv
 /ml-service/__pycache__
+/client/node_modules
+/client/.env

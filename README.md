@@ -1,4 +1,4 @@
-#  GitHub Portfolio Analyzer – AI Powered Recruiter Review
+#  Gitfolio
 
 > Transform your GitHub into a job-ready, recruiter-approved portfolio in under 60 seconds.
 
@@ -275,3 +275,6 @@ curl -X POST http://localhost:5000/api/github/analyze \
 | Frontend | Vercel |
 | Backend API | Render |
 | ML Service | Render |
+
+
+

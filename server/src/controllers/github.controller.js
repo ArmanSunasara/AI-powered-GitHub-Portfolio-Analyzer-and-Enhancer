@@ -3,7 +3,7 @@ import { getUserProfile, getUserRepos } from "../services/github.service.js";
 import { analyzeRepos } from "../services/repoAnalyzer.service.js";
 import { calculateAdvancedScore } from "../services/scoring.service.js";
 import axios from "axios";
-import config from "../config/index.js";
+
 
 export const analyzeGithub = async (req, res, next) => {
   try {
@@ -28,7 +28,7 @@ export const analyzeGithub = async (req, res, next) => {
     let aiFeedback = null;
     try {
       const aiResponse = await axios.post(
-        `${config.mlServiceUrl}/analyze`,
+        `${process.env.ML_SERVICE_URL || "http://localhost:8000"}/analyze`,
         {
           score,
           repoAnalysis,

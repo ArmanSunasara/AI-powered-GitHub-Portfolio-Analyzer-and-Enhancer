@@ -4,7 +4,7 @@ import helmet from "helmet";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import morgan from "morgan";
-import config from "./config/index.js";
+
 import githubRoutes from "./routes/github.routes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
@@ -13,14 +13,14 @@ const app = express();
 app.use(helmet());
 app.use(compression());
 
-if (!config.isProduction) {
+if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 } else {
   app.use(morgan("combined"));
 }
 
 const corsOptions = {
-  origin: config.frontendUrl,
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
   credentials: true,
   optionsSuccessStatus: 200,
 };

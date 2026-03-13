@@ -1,11 +1,11 @@
 import axios from "axios";
-import config from "../config/index.js";
+
 
 const BASE_URL = "https://api.github.com";
 const TIMEOUT = 15000;
 
 const getHeaders = () => {
-  const token = config.githubToken;
+  const token = process.env.GITHUB_TOKEN;
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 

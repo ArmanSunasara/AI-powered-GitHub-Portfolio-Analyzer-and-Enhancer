@@ -1,4 +1,4 @@
-import config from "../config/index.js";
+
 
 export const errorHandler = (err, req, res, _next) => {
   console.error("Error:", err);
@@ -22,7 +22,7 @@ export const errorHandler = (err, req, res, _next) => {
 
   res.status(500).json({
     success: false,
-    error: config.isProduction
+    error: process.env.NODE_ENV === "production"
       ? "Internal server error" 
       : err.message,
   });

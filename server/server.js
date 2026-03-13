@@ -1,8 +1,10 @@
-import config from "./src/config/index.js";
+import "dotenv/config";
 import app from "./src/app.js";
 
-const server = app.listen(config.port, () => {
-  console.log(`🚀 Server running on port ${config.port} [${config.nodeEnv}]`);
+const PORT = parseInt(process.env.PORT, 10) || 5000;
+
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT} [${process.env.NODE_ENV || "development"}]`);
 });
 
 const shutdown = (signal) => {

@@ -15,12 +15,5 @@ export const validateAnalyzeRequest = (req, res, next) => {
     });
   }
 
-  if (!url.includes("github.com")) {
-    return res.status(400).json({
-      success: false,
-      error: "Invalid GitHub URL format",
-    });
-  }
-
   next();
 };

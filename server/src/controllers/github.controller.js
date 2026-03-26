@@ -28,7 +28,7 @@ export const analyzeGithub = async (req, res, next) => {
     let aiFeedback = null;
     try {
       const aiResponse = await axios.post(
-        `${process.env.ML_SERVICE_URL || "http://localhost:8000"}/analyze`,
+        `${process.env.ML_SERVICE_URL}/analyze`,
         {
           score,
           repoAnalysis,

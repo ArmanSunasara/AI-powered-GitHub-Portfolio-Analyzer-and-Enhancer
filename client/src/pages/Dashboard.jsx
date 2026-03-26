@@ -45,11 +45,12 @@ export default function Dashboard() {
         >
           <div className="flex items-center justify-center gap-3 mb-3">
             <FiGithub className="text-4xl text-blue-400" />
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
               Portfolio Analyzer
             </h1>
           </div>
           <p className="text-gray-400 text-lg max-w-xl mx-auto">
+            
             AI-powered recruiter review for your GitHub profile. Get actionable
             feedback in under 60 seconds.
           </p>

@@ -9,7 +9,7 @@ load_dotenv()
 _client = None
 
 NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
-NVIDIA_MODEL = "minimaxai/minimax-m2.5"
+NVIDIA_MODEL = "openai/gpt-oss-120b"
 
 
 def _get_client():
@@ -84,8 +84,8 @@ Be specific, actionable, and professional. Focus on what recruiters care about."
                 {"role": "user", "content": prompt},
             ],
             temperature=1,
-            top_p=0.95,
-            max_tokens=8192,
+            top_p=1,
+            max_tokens=4096,
             stream=True,
         )
 
@@ -94,7 +94,11 @@ Be specific, actionable, and professional. Focus on what recruiters care about."
         for chunk in completion:
             if not getattr(chunk, "choices", None):
                 continue
-            if chunk.choices[0].delta.content is not None:
+            
+            # We skip printing to the console to hide the reasoning output
+            # reasoning = getattr(chunk.choices[0].delta, "reasoning_content", None)
+            
+            if chunk.choices and chunk.choices[0].delta.content is not None:
                 content += chunk.choices[0].delta.content
 
         content = content.strip()

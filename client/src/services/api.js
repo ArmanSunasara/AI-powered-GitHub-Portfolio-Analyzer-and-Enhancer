@@ -13,10 +13,7 @@ const api = axios.create({
 export const analyzeGithubProfile = async (url) => {
   try {
     const response = await api.post("/analyze", { url });
-    return {
-      success: true,
-      data: response.data,
-    };
+    return { success: true, data: response.data };
   } catch (error) {
     if (error.code === "ECONNABORTED") {
       return {
@@ -24,10 +21,16 @@ export const analyzeGithubProfile = async (url) => {
         error: "Request timed out. Please try again.",
       };
     }
+    if (!error.response) {
+      return {
+        success: false,
+        error: "Unable to reach the server. Please check your connection.",
+      };
+    }
     return {
       success: false,
       error:
-        error.response?.data?.error ||
+        error.response.data?.error ||
         error.message ||
         "Failed to analyze GitHub profile",
     };

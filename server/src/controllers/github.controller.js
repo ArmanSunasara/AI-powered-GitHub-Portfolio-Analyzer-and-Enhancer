@@ -1,9 +1,10 @@
+import axios from "axios";
 import { extractUsername } from "../utils/extractUsername.js";
 import { getUserProfile, getUserRepos } from "../services/github.service.js";
 import { analyzeRepos } from "../services/repoAnalyzer.service.js";
 import { calculateAdvancedScore } from "../services/scoring.service.js";
-import axios from "axios";
 
+const AI_TIMEOUT = 30000;
 
 export const analyzeGithub = async (req, res, next) => {
   try {
@@ -13,7 +14,7 @@ export const analyzeGithub = async (req, res, next) => {
     if (!username) {
       return res.status(400).json({
         success: false,
-        error: "Invalid GitHub URL format",
+        error: "Invalid GitHub URL or username format",
       });
     }
 
@@ -22,25 +23,22 @@ export const analyzeGithub = async (req, res, next) => {
       getUserRepos(username),
     ]);
 
-    const repoAnalysis = await analyzeRepos(repos, username);
+    const repoAnalysis = await analyzeRepos(repos, profile.login);
     const score = calculateAdvancedScore(repoAnalysis);
 
     let aiFeedback = null;
-    try {
-      const aiResponse = await axios.post(
-        `${process.env.ML_SERVICE_URL || "http://localhost:8000"}/analyze`,
-        {
-          score,
-          repoAnalysis,
-          username: profile.login,
-        },
-        {
-          timeout: 30000,
-        }
-      );
-      aiFeedback = aiResponse.data?.data || aiResponse.data;
-    } catch (aiError) {
-      console.warn("AI service unavailable:", aiError.message);
+    const mlServiceUrl = process.env.ML_SERVICE_URL;
+    if (mlServiceUrl) {
+      try {
+        const aiResponse = await axios.post(
+          `${mlServiceUrl}/analyze`,
+          { score, repoAnalysis, username: profile.login },
+          { timeout: AI_TIMEOUT }
+        );
+        aiFeedback = aiResponse.data?.data || aiResponse.data;
+      } catch (aiError) {
+        console.warn("AI service unavailable:", aiError.message);
+      }
     }
 
     res.json({

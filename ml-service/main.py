@@ -1,9 +1,13 @@
+import os
+import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from analyzer import generate_feedback
-import os
+
+logger = logging.getLogger("ml-service")
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
     title="GitHub Portfolio Analyzer - ML Service",
@@ -11,7 +15,13 @@ app = FastAPI(
     version="1.0.0",
 )
 
-origins = os.getenv("CORS_ORIGINS", "http://localhost:5000,http://localhost:5173").split(",")
+origins = [
+    o.strip()
+    for o in os.getenv(
+        "CORS_ORIGINS", "http://localhost:5000,http://localhost:5173"
+    ).split(",")
+    if o.strip()
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,15 +34,17 @@ app.add_middleware(
 
 class RepoAnalysis(BaseModel):
     name: str
-    stars: int
-    hasReadme: bool
-    commitCount: int
-    languages: List[str]
+    stars: int = 0
+    hasReadme: bool = False
+    commitCount: int = 0
+    languages: List[str] = Field(default_factory=list)
 
 
 class AnalyzeRequest(BaseModel):
     score: int = Field(..., ge=0, le=100, description="Portfolio score")
-    repoAnalysis: List[RepoAnalysis] = Field(..., description="Repository analysis data")
+    repoAnalysis: List[RepoAnalysis] = Field(
+        ..., description="Repository analysis data"
+    )
     username: Optional[str] = Field(None, description="GitHub username")
 
 
@@ -46,21 +58,14 @@ async def analyze(request: AnalyzeRequest):
     try:
         data = {
             "score": request.score,
-            "repoAnalysis": [
-                repo.model_dump() if hasattr(repo, "model_dump") else repo.dict()
-                for repo in request.repoAnalysis
-            ],
+            "repoAnalysis": [repo.model_dump() for repo in request.repoAnalysis],
             "username": request.username,
         }
-        
         result = generate_feedback(data)
-        
-        return {
-            "success": True,
-            "data": result,
-        }
+        return {"success": True, "data": result}
     except Exception as e:
+        logger.exception("Failed to generate feedback")
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to generate feedback: {str(e)}"
-        )
+            status_code=502,
+            detail="Failed to generate feedback. Please try again later.",
+        ) from e

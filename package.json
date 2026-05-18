@@ -1,0 +1,27 @@
+{
+  "name": "github-project",
+  "version": "1.0.0",
+  "description": "> Transform your GitHub into a job-ready, recruiter-approved portfolio in under 60 seconds.",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "frontend": "cd client && npm run dev",
+    "backend": "cd server && npm start",
+    "ml-service": "cd ml-service && uvicorn main:app --reload --port 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArmanSunasara/Gitfolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ArmanSunasara/Gitfolio/issues"
+  },
+  "homepage": "https://github.com/ArmanSunasara/Gitfolio#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

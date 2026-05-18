@@ -45,7 +45,7 @@ export default function Dashboard() {
         >
           <div className="flex items-center justify-center gap-3 mb-3">
             <FiGithub className="text-4xl text-blue-400" />
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
               Portfolio Analyzer
             </h1>
           </div>
@@ -101,7 +101,7 @@ export default function Dashboard() {
 
             {data.aiFeedback && <Feedback feedback={data.aiFeedback} />}
 
-            {data.repoAnalysis && data.repoAnalysis.length > 0 && (
+            {data.repoAnalysis && data.repoAnalysis.length > 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -120,6 +120,15 @@ export default function Dashboard() {
                     />
                   ))}
                 </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="text-center text-gray-500 bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 mb-10"
+              >
+                No public repositories were available to analyze.
               </motion.div>
             )}
 

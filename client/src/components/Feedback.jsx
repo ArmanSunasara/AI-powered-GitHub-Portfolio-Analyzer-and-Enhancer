@@ -75,17 +75,26 @@ function Feedback({ feedback }) {
                 </span>
               </div>
               <ul className="space-y-3">
-                {section.items.map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-3 text-gray-300 text-sm leading-relaxed"
-                  >
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full ${section.iconColor.replace("text-", "bg-")} mt-2 shrink-0`}
-                    />
-                    <span>{item}</span>
-                  </li>
-                ))}
+                {section.items.map((item, i) => {
+                  const text =
+                    typeof item === "string"
+                      ? item
+                      : item == null
+                      ? ""
+                      : JSON.stringify(item);
+                  if (!text) return null;
+                  return (
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 text-gray-300 text-sm leading-relaxed"
+                    >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${section.iconColor.replace("text-", "bg-")} mt-2 shrink-0`}
+                      />
+                      <span>{text}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </motion.div>
           )

@@ -50,7 +50,6 @@ export default function Dashboard() {
             </h1>
           </div>
           <p className="text-gray-400 text-lg max-w-xl mx-auto">
-            
             AI-powered recruiter review for your GitHub profile. Get actionable
             feedback in under 60 seconds.
           </p>
@@ -102,7 +101,7 @@ export default function Dashboard() {
 
             {data.aiFeedback && <Feedback feedback={data.aiFeedback} />}
 
-            {data.repoAnalysis && data.repoAnalysis.length > 0 && (
+            {data.repoAnalysis && data.repoAnalysis.length > 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -121,6 +120,15 @@ export default function Dashboard() {
                     />
                   ))}
                 </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="text-center text-gray-500 bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 mb-10"
+              >
+                No public repositories were available to analyze.
               </motion.div>
             )}
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FiUser, FiFolder, FiCpu, FiCheckCircle } from "react-icons/fi";
 
 const steps = [
@@ -36,51 +36,47 @@ function Loader() {
         </div>
 
         <div className="space-y-3">
-          <AnimatePresence mode="wait">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              const isActive = index === currentStep;
-              const isDone = index < currentStep;
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            const isActive = index === currentStep;
+            const isDone = index < currentStep;
 
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0.4 }}
-                  animate={{
-                    opacity: isDone || isActive ? 1 : 0.4,
-                  }}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors duration-300 ${
-                    isActive
-                      ? "bg-blue-500/10 border border-blue-500/30"
-                      : isDone
-                      ? "bg-green-500/5"
-                      : ""
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0.4 }}
+                animate={{ opacity: isDone || isActive ? 1 : 0.4 }}
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors duration-300 ${
+                  isActive
+                    ? "bg-blue-500/10 border border-blue-500/30"
+                    : isDone
+                    ? "bg-green-500/5"
+                    : ""
+                }`}
+              >
+                <Icon
+                  className={`text-lg shrink-0 ${
+                    isDone
+                      ? "text-green-400"
+                      : isActive
+                      ? "text-blue-400"
+                      : "text-gray-600"
+                  }`}
+                />
+                <span
+                  className={`text-sm ${
+                    isDone
+                      ? "text-green-400"
+                      : isActive
+                      ? "text-blue-300"
+                      : "text-gray-600"
                   }`}
                 >
-                  <Icon
-                    className={`text-lg shrink-0 ${
-                      isDone
-                        ? "text-green-400"
-                        : isActive
-                        ? "text-blue-400"
-                        : "text-gray-600"
-                    }`}
-                  />
-                  <span
-                    className={`text-sm ${
-                      isDone
-                        ? "text-green-400"
-                        : isActive
-                        ? "text-blue-300"
-                        : "text-gray-600"
-                    }`}
-                  >
-                    {isDone ? step.label.replace("...", " ✓") : step.label}
-                  </span>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+                  {isDone ? step.label.replace("...", " ✓") : step.label}
+                </span>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </motion.div>

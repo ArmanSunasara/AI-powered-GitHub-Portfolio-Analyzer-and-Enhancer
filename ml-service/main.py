@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from analyzer import generate_feedback
+from specialization import analyze_specialization_fit, list_roles
+from specialization.schema import SpecializationFitRequest
 
 logger = logging.getLogger("ml-service")
 logging.basicConfig(level=logging.INFO)
@@ -68,4 +70,24 @@ async def analyze(request: AnalyzeRequest):
         raise HTTPException(
             status_code=502,
             detail="Failed to generate feedback. Please try again later.",
+        ) from e
+
+
+@app.get("/specialization/roles")
+async def specialization_roles():
+    return {"success": True, "data": list_roles()}
+
+
+@app.post("/specialization/analyze")
+async def specialization_analyze(request: SpecializationFitRequest):
+    try:
+        report = analyze_specialization_fit(request)
+        return {"success": True, "data": report.model_dump()}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.exception("Specialization fit analysis failed")
+        raise HTTPException(
+            status_code=502,
+            detail="Failed to analyze specialization fit. Please try again later.",
         ) from e

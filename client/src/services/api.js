@@ -4,36 +4,60 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const api = axios.create({
   baseURL: `${API_URL}/api/github`,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
   timeout: 60000,
 });
+
+const specializationApi = axios.create({
+  baseURL: `${API_URL}/api/specialization`,
+  headers: { "Content-Type": "application/json" },
+  timeout: 90000,
+});
+
+const wrapError = (error, fallback) => {
+  if (error.code === "ECONNABORTED") {
+    return { success: false, error: "Request timed out. Please try again." };
+  }
+  if (!error.response) {
+    return {
+      success: false,
+      error: "Unable to reach the server. Please check your connection.",
+    };
+  }
+  return {
+    success: false,
+    error: error.response.data?.error || error.message || fallback,
+  };
+};
 
 export const analyzeGithubProfile = async (url) => {
   try {
     const response = await api.post("/analyze", { url });
     return { success: true, data: response.data };
   } catch (error) {
-    if (error.code === "ECONNABORTED") {
-      return {
-        success: false,
-        error: "Request timed out. Please try again.",
-      };
-    }
-    if (!error.response) {
-      return {
-        success: false,
-        error: "Unable to reach the server. Please check your connection.",
-      };
-    }
-    return {
-      success: false,
-      error:
-        error.response.data?.error ||
-        error.message ||
-        "Failed to analyze GitHub profile",
-    };
+    return wrapError(error, "Failed to analyze GitHub profile");
+  }
+};
+
+export const fetchSpecializationRoles = async () => {
+  try {
+    const response = await specializationApi.get("/roles");
+    return { success: true, data: response.data?.data || [] };
+  } catch (error) {
+    return wrapError(error, "Failed to load roles");
+  }
+};
+
+export const analyzeSpecializationFit = async ({ url, roleId, jobDescription }) => {
+  try {
+    const response = await specializationApi.post("/analyze", {
+      url,
+      roleId,
+      jobDescription,
+    });
+    return { success: true, data: response.data?.data };
+  } catch (error) {
+    return wrapError(error, "Failed to analyze specialization fit");
   }
 };
 

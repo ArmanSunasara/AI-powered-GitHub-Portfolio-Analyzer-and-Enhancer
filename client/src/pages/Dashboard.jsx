@@ -1,38 +1,53 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FiGithub, FiRefreshCw } from "react-icons/fi";
-import InputForm from "../components/InputForm";
-import Loader from "../components/Loader";
-import ProfileHeader from "../components/ProfileHeader";
-import ScoreCard from "../components/ScoreCard";
-import Feedback from "../components/Feedback";
-import RepoCard from "../components/RepoCard";
-import { analyzeGithubProfile } from "../services/api";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { FiGithub } from "react-icons/fi";
+import HomePage from "./HomePage";
+import CandidateShortlistPage from "./hr/CandidateShortlistPage";
+import GithubProfileComparePage from "./hr/GithubProfileComparePage";
+import RecruiterToolsPage from "./hr/RecruiterToolsPage";
+import ResumeGithubMatchPage from "./hr/ResumeGithubMatchPage";
+import AtsScorePage from "./student/AtsScorePage";
+import SpecializationFitPage from "./student/SpecializationFitPage";
+import StudentToolsPage from "./student/StudentToolsPage";
+import { getCurrentRoute, routes } from "../routes";
 
-export default function Dashboard() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+function Dashboard() {
+  const [route, setRoute] = useState(getCurrentRoute);
 
-  const handleAnalyze = async (url) => {
-    setLoading(true);
-    setError(null);
-    setData(null);
+  useEffect(() => {
+    const handlePopState = () => setRoute(getCurrentRoute());
 
-    const result = await analyzeGithubProfile(url);
+    window.addEventListener("popstate", handlePopState);
 
-    if (result.success) {
-      setData(result.data);
-    } else {
-      setError(result.error);
-    }
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
-    setLoading(false);
+  const navigate = (path) => {
+    window.history.pushState({}, "", path);
+    setRoute(path);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleReset = () => {
-    setData(null);
-    setError(null);
+  const renderPage = () => {
+    switch (route) {
+      case routes.students:
+        return <StudentToolsPage navigate={navigate} />;
+      case routes.ats:
+        return <AtsScorePage navigate={navigate} />;
+      case routes.specialization:
+        return <SpecializationFitPage navigate={navigate} />;
+      case routes.recruiters:
+        return <RecruiterToolsPage navigate={navigate} />;
+      case routes.shortlist:
+        return <CandidateShortlistPage navigate={navigate} />;
+      case routes.resumeGithub:
+        return <ResumeGithubMatchPage navigate={navigate} />;
+      case routes.githubCompare:
+        return <GithubProfileComparePage navigate={navigate} />;
+      case routes.home:
+      default:
+        return <HomePage navigate={navigate} />;
+    }
   };
 
   return (
@@ -57,104 +72,16 @@ export default function Dashboard() {
       </header>
 
       <main className="flex-1 px-4 pb-12">
-        <InputForm onAnalyze={handleAnalyze} loading={loading} />
-
-        <AnimatePresence mode="wait">
-          {loading && (
-            <motion.div
-              key="loader"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <Loader />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="max-w-2xl mx-auto mb-8"
-            >
-              <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-5 text-center">
-                <p className="text-red-300 font-medium">{error}</p>
-                <button
-                  onClick={handleReset}
-                  className="mt-3 text-sm text-red-400 hover:text-red-300 underline underline-offset-2 cursor-pointer"
-                >
-                  Try again
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {data && (
-          <div className="max-w-5xl mx-auto">
-            <ProfileHeader data={data} />
-
-            <ScoreCard score={data.score} />
-
-            {data.aiFeedback && <Feedback feedback={data.aiFeedback} />}
-
-            {data.repoAnalysis && data.repoAnalysis.length > 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <h2 className="text-xl font-semibold mb-6 text-gray-300 text-center uppercase tracking-wider">
-                  Top Repositories
-                </h2>
-                <div className="grid md:grid-cols-2 gap-5">
-                  {data.repoAnalysis.map((repo, i) => (
-                    <RepoCard
-                      key={repo.name}
-                      repo={repo}
-                      index={i}
-                      username={data.username}
-                    />
-                  ))}
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="text-center text-gray-500 bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 mb-10"
-              >
-                No public repositories were available to analyze.
-              </motion.div>
-            )}
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="flex justify-center mt-10"
-            >
-              <button
-                onClick={handleReset}
-                className="flex items-center gap-2 text-gray-400 hover:text-white border border-slate-700 hover:border-blue-500/50 px-6 py-3 rounded-xl transition-all duration-200 cursor-pointer"
-              >
-                <FiRefreshCw />
-                Analyze Another Profile
-              </button>
-            </motion.div>
-          </div>
-        )}
+        <AnimatePresence mode="wait">{renderPage()}</AnimatePresence>
       </main>
 
       <footer className="py-6 px-4 border-t border-slate-800">
         <p className="text-center text-gray-600 text-sm">
-          GitHub Portfolio Analyzer — AI-Powered Recruiter Review
+          GitHub Portfolio Analyzer - AI-Powered Recruiter Review
         </p>
       </footer>
     </div>
   );
 }
+
+export default Dashboard;

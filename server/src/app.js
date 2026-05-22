@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 
 import githubRoutes from "./routes/github.routes.js";
+import shortlistRoutes from "./routes/shortlist.routes.js";
 import specializationRoutes from "./routes/specialization.routes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
@@ -64,6 +65,7 @@ app.use("/api", apiLimiter);
 
 app.use("/api/github", githubRoutes);
 app.use("/api/specialization", specializationRoutes);
+app.use("/api/shortlist", shortlistRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

@@ -14,6 +14,13 @@ const specializationApi = axios.create({
   timeout: 90000,
 });
 
+// The shortlist endpoint fans out N GitHub deep-analyses plus N+1 LLM calls,
+// so it can comfortably run a couple of minutes for large sheets.
+const shortlistApi = axios.create({
+  baseURL: `${API_URL}/api/shortlist`,
+  timeout: 240000,
+});
+
 const wrapError = (error, fallback) => {
   if (error.code === "ECONNABORTED") {
     return { success: false, error: "Request timed out. Please try again." };
@@ -58,6 +65,26 @@ export const analyzeSpecializationFit = async ({ url, roleId, jobDescription }) 
     return { success: true, data: response.data?.data };
   } catch (error) {
     return wrapError(error, "Failed to analyze specialization fit");
+  }
+};
+
+export const analyzeCandidateShortlist = async ({
+  excelFile,
+  jobDescription,
+  shortlistCount,
+}) => {
+  try {
+    const formData = new FormData();
+    formData.append("excel_file", excelFile);
+    formData.append("jobDescription", jobDescription);
+    formData.append("shortlistCount", String(shortlistCount));
+
+    const response = await shortlistApi.post("/analyze", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return { success: true, data: response.data?.data };
+  } catch (error) {
+    return wrapError(error, "Failed to shortlist candidates");
   }
 };
 

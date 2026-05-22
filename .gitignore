@@ -9,6 +9,7 @@
 /node_modules
 /dist
 /build
+/README1.md
 /.vscode
 /.idea
 .DS_Store

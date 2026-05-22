@@ -33,6 +33,18 @@ export const errorHandler = (err, req, res, _next) => {
     });
   }
 
+  // multer surfaces upload problems as MulterError with a stable .code
+  if (err.name === "MulterError") {
+    const status = err.code === "LIMIT_FILE_SIZE" ? 413 : 400;
+    return res.status(status).json({
+      success: false,
+      error:
+        err.code === "LIMIT_FILE_SIZE"
+          ? "Uploaded file is too large"
+          : err.message || "File upload failed",
+    });
+  }
+
   res.status(500).json({
     success: false,
     error: process.env.NODE_ENV === "production"

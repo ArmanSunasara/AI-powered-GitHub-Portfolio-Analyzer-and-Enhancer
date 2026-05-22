@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from analyzer import generate_feedback
+from shortlist import shortlist_candidates
+from shortlist.schema import CandidateShortlistRequest
 from specialization import analyze_specialization_fit, list_roles
 from specialization.schema import SpecializationFitRequest
 
@@ -90,4 +92,19 @@ async def specialization_analyze(request: SpecializationFitRequest):
         raise HTTPException(
             status_code=502,
             detail="Failed to analyze specialization fit. Please try again later.",
+        ) from e
+
+
+@app.post("/shortlist/analyze")
+async def shortlist_analyze(request: CandidateShortlistRequest):
+    try:
+        result = shortlist_candidates(request)
+        return {"success": True, "data": result.model_dump()}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.exception("Candidate shortlist failed")
+        raise HTTPException(
+            status_code=502,
+            detail="Failed to shortlist candidates. Please try again later.",
         ) from e

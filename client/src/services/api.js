@@ -21,6 +21,12 @@ const shortlistApi = axios.create({
   timeout: 240000,
 });
 
+// Resume parse + GitHub deep-analysis + one LLM matching call.
+const resumeMatchApi = axios.create({
+  baseURL: `${API_URL}/api/resume-match`,
+  timeout: 120000,
+});
+
 const wrapError = (error, fallback) => {
   if (error.code === "ECONNABORTED") {
     return { success: false, error: "Request timed out. Please try again." };
@@ -85,6 +91,21 @@ export const analyzeCandidateShortlist = async ({
     return { success: true, data: response.data?.data };
   } catch (error) {
     return wrapError(error, "Failed to shortlist candidates");
+  }
+};
+
+export const analyzeResumeGithubMatch = async ({ url, resumeFile }) => {
+  try {
+    const formData = new FormData();
+    formData.append("url", url);
+    formData.append("resume", resumeFile);
+
+    const response = await resumeMatchApi.post("/analyze", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return { success: true, data: response.data?.data };
+  } catch (error) {
+    return wrapError(error, "Failed to analyze resume vs GitHub");
   }
 };
 

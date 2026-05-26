@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from analyzer import generate_feedback
+from resume_match import analyze_resume_github_match
+from resume_match.schema import ResumeGithubMatchRequest
 from shortlist import shortlist_candidates
 from shortlist.schema import CandidateShortlistRequest
 from specialization import analyze_specialization_fit, list_roles
@@ -92,6 +94,21 @@ async def specialization_analyze(request: SpecializationFitRequest):
         raise HTTPException(
             status_code=502,
             detail="Failed to analyze specialization fit. Please try again later.",
+        ) from e
+
+
+@app.post("/resume-match/analyze")
+async def resume_match_analyze(request: ResumeGithubMatchRequest):
+    try:
+        report = analyze_resume_github_match(request)
+        return {"success": True, "data": report.model_dump()}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.exception("Resume vs GitHub match failed")
+        raise HTTPException(
+            status_code=502,
+            detail="Failed to analyze resume vs GitHub. Please try again later.",
         ) from e
 
 

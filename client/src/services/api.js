@@ -27,6 +27,15 @@ const resumeMatchApi = axios.create({
   timeout: 120000,
 });
 
+// Two GitHub deep-analyses (parallel) + one LLM comparison call. Two heavy
+// GitHub fetches plus the model round-trip can land around 60-90s on a cold
+// cache, so we give it the same 2-minute envelope as resume-match.
+const githubCompareApi = axios.create({
+  baseURL: `${API_URL}/api/github-compare`,
+  headers: { "Content-Type": "application/json" },
+  timeout: 180000,
+});
+
 const wrapError = (error, fallback) => {
   if (error.code === "ECONNABORTED") {
     return { success: false, error: "Request timed out. Please try again." };
@@ -106,6 +115,18 @@ export const analyzeResumeGithubMatch = async ({ url, resumeFile }) => {
     return { success: true, data: response.data?.data };
   } catch (error) {
     return wrapError(error, "Failed to analyze resume vs GitHub");
+  }
+};
+
+export const analyzeGithubCompare = async ({ profileA, profileB }) => {
+  try {
+    const response = await githubCompareApi.post("/analyze", {
+      profileA,
+      profileB,
+    });
+    return { success: true, data: response.data?.data };
+  } catch (error) {
+    return wrapError(error, "Failed to compare GitHub profiles");
   }
 };
 

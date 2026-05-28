@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from analyzer import generate_feedback
+from github_compare import analyze_github_compare
+from github_compare.schema import GithubCompareRequest
 from resume_match import analyze_resume_github_match
 from resume_match.schema import ResumeGithubMatchRequest
 from shortlist import shortlist_candidates
@@ -109,6 +111,21 @@ async def resume_match_analyze(request: ResumeGithubMatchRequest):
         raise HTTPException(
             status_code=502,
             detail="Failed to analyze resume vs GitHub. Please try again later.",
+        ) from e
+
+
+@app.post("/github-compare/analyze")
+async def github_compare_analyze(request: GithubCompareRequest):
+    try:
+        report = analyze_github_compare(request)
+        return {"success": True, "data": report.model_dump()}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve)) from ve
+    except Exception as e:
+        logger.exception("GitHub compare failed")
+        raise HTTPException(
+            status_code=502,
+            detail="Failed to compare GitHub profiles. Please try again later.",
         ) from e
 
 

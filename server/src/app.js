@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 
 import githubRoutes from "./routes/github.routes.js";
+import githubCompareRoutes from "./routes/githubCompare.routes.js";
 import resumeMatchRoutes from "./routes/resumeMatch.routes.js";
 import shortlistRoutes from "./routes/shortlist.routes.js";
 import specializationRoutes from "./routes/specialization.routes.js";
@@ -65,6 +66,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api", apiLimiter);
 
 app.use("/api/github", githubRoutes);
+app.use("/api/github-compare", githubCompareRoutes);
 app.use("/api/specialization", specializationRoutes);
 app.use("/api/shortlist", shortlistRoutes);
 app.use("/api/resume-match", resumeMatchRoutes);

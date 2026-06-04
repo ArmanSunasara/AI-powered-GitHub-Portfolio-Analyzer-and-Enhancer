@@ -1,11 +1,20 @@
 /server/.env
 /server/node_modules
+
+
+
 /ml-service/.env
 /ml-service/.venv
 /ml-service/__pycache__
 /ml-service/temp
+
+
+
 /client/node_modules
 /client/.env
+
+
+
 /node_modules
 /dist
 /build
@@ -24,3 +33,4 @@ __pycache__/
 .claude_cache/*
 .codex
 .agents
+temp

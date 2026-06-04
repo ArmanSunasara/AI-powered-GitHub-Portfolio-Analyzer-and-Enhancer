@@ -1,47 +1,32 @@
 import { motion } from "framer-motion";
-import { FiBriefcase, FiUsers } from "react-icons/fi";
-import FeatureButton from "../components/FeatureButton";
-import { routes } from "../routes";
+import Hero from "../components/sections/Hero";
+import HowItWorks from "../components/sections/HowItWorks";
+import Features from "../components/sections/Features";
+import About from "../components/sections/About";
+import CTABanner from "../components/sections/CTABanner";
 
+/**
+ * The landing experience. Composes the marketing sections; the global Navbar
+ * and Footer live in Dashboard so they wrap every route consistently.
+ *
+ * `navigate` drives the SPA router; `scrollToSection` is forwarded for any
+ * in-page anchor jumps (used by the nav, passed through for completeness).
+ */
 function HomePage({ navigate }) {
   return (
-    <motion.section
+    <motion.div
       key="home"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.3 }}
-      className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2"
     >
-      <FeatureButton
-        title="Student Tools"
-        description="Improve your resume, GitHub profile, and career direction."
-        icon={FiUsers}
-        onClick={() => navigate(routes.students)}
-        accent={{
-          border: "border-blue-400/25",
-          hoverBg: "hover:bg-blue-950/50",
-          hoverBorder: "hover:border-blue-300/70",
-          shadow: "hover:shadow-blue-500/10",
-          iconBg: "bg-blue-500/15",
-          iconText: "text-blue-300",
-        }}
-      />
-      <FeatureButton
-        title="Recruiter Tools"
-        description="Shortlist, compare, and verify candidate portfolios faster."
-        icon={FiBriefcase}
-        onClick={() => navigate(routes.recruiters)}
-        accent={{
-          border: "border-purple-400/25",
-          hoverBg: "hover:bg-purple-950/50",
-          hoverBorder: "hover:border-purple-300/70",
-          shadow: "hover:shadow-purple-500/10",
-          iconBg: "bg-purple-500/15",
-          iconText: "text-purple-300",
-        }}
-      />
-    </motion.section>
+      <Hero navigate={navigate} />
+      <HowItWorks />
+      <Features navigate={navigate} />
+      <About />
+      <CTABanner navigate={navigate} />
+    </motion.div>
   );
 }
 
